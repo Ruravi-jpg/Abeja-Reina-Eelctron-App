@@ -1,0 +1,38 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run start-react\" \"wait-on http://localhost:3000 && npm run start-electron\"",
+    "start-electron": "set NODE_ENV=development && electron main.js",
+    "start-react": "cd ../abeja_reina/ && npm start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "electron": "^26.2.1",
+    "electron-is-dev": "^2.0.0",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-reloader": "^1.2.3",
+    "electronmon": "^2.0.2",
+    "wait-on": "^7.0.1"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.8",
+    "@mui/material": "^5.14.8",
+    "axios": "^1.5.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "framer-motion": "^10.16.4",
+    "nedb": "^1.8.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.1"
+  }
+}
