@@ -1,70 +1,43 @@
 const { app, BrowserWindow } = require('electron');
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const url = require('url');
-
-// Create an Express app
-console.log('Creating Express server ');
-const expressApp = express();
-const port = 8000;
-
-expressApp.use(cors());
-expressApp.use(express.json());
-
-const env = process.env.NODE_ENV || 'development';
-  
-// If development environment
-if (env === 'development') {
-  try {
-    require('electron-reloader')(module, {
-        debug: true,
-        watchRenderer: true
-    });
-} catch (_) { console.log('Error', 24); }   
-}
-
+require('dotenv').config();
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({webPreferences: {nodeIntegration: true}});
-  mainWindow.loadURL('http://localhost:3000');
+  const mainWindow = new BrowserWindow({ webPreferences: { nodeIntegration: true } });
+  console.log(process.env.NODE_ENV)
+  if (process.env.NODE_ENV === 'development') {
+    // Load the React development server in development environment
+    mainWindow.loadURL("http://localhost:3000");
+  } else {
+    // Start the Express server in production environment
+    const expressServer = require('./Express/App.js'); // Adjust the path as needed
+    mainWindow.loadFile('./React/index.html');
+  }
+
   mainWindow.maximize();
 
-  // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
-  //mainWindow.loadFile('index.html');
+  // Make sure the 'closed' event listener is attached to the BrowserWindow instance, not inside the createWindow function.
+  mainWindow.on('closed', () => {
+    // Gracefully shut down the Express server when the Electron app is closed.
+    expressServer.close(() => {
+      app.quit();
+    });
+  });
 }
 
-
 app.whenReady().then(() => {
+  createWindow();
+});
+
+// Add the following code to handle closing all windows (if you haven't already):
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
-  });
-
-
-  // Listen for the 'before-quit' event
-app.on('before-quit', () => {
-    // Add cleanup logic here before quitting
-    console.log('Electron app is about to quit');
-  });
-  
-  // Listen for the 'will-quit' event
-  app.on('will-quit', () => {
-    // Terminate the Express server process when Electron is quitting
-    if (expressApp) {
-      expressApp.kill();
-      console.log('Express server has been terminated');
-    }
-  });
-
-
-  // routes
-
-  const itemRoutes = require('./Routes/itemsRoutes');
-
-
-  expressApp.use(itemRoutes);
-  
-
-  expressApp.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+  }
+});

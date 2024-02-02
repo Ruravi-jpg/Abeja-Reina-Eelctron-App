@@ -2,12 +2,16 @@
   "name": "app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"npm run start-react\" \"wait-on http://localhost:3000 && npm run start-electron\"",
-    "start-electron": "set NODE_ENV=development && electron main.js",
-    "start-react": "cd ../abeja_reina/ && npm start"
+    "start-debug": "concurrently \"npm run start-react\" \"npm run start-express-debug\" \"wait-on http://localhost:3000 && npm run start-electron\"",
+    "start": "concurrently \"npm run start-react\" \"npm run start-express\" \"wait-on http://localhost:3000 && npm run start-electron\"",
+    "start-electron": "electron main.js",
+    "start-express": "cd ./Express && nodemon App.js",
+    "start-express-debug": "cd ./Express && nodemon --inspect=0.0.0.0:9229 App.js",
+    "start-react": "cd ../abeja_reina/ && npm start",
+    "package": "electron-packager . AbejaReinaApp --platform=win32 --arch=x64 --out=dist --overwrite --app-version=1.0.0  --prune --extract-executable"
   },
   "keywords": [],
   "author": "",
@@ -15,10 +19,13 @@
   "devDependencies": {
     "concurrently": "^8.2.1",
     "electron": "^26.2.1",
+    "electron-builder": "^24.6.4",
     "electron-is-dev": "^2.0.0",
+    "electron-packager": "^17.1.2",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",
     "electronmon": "^2.0.2",
+    "nodemon": "^3.0.1",
     "wait-on": "^7.0.1"
   },
   "dependencies": {
@@ -28,11 +35,16 @@
     "@mui/material": "^5.14.8",
     "axios": "^1.5.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "framer-motion": "^10.16.4",
-    "nedb": "^1.8.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "sqlite3": "^5.1.6",
     "uuid": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.abejareina.app",
+    "productName": "Abeja Reina App",
+    "win": {
+      "target": "portable"
+    }
   }
 }
